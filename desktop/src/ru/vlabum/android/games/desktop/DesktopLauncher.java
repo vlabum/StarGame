@@ -2,6 +2,7 @@ package ru.vlabum.android.games.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+
 import ru.vlabum.android.games.StarGame;
 
 public class DesktopLauncher {
