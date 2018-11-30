@@ -38,23 +38,9 @@ public class MainScreen extends Base2DScreen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        batch.draw(txSpaceRegion, 0, 0);
-        batch.draw(txShuttle,
-                vShuttlePosition.x - txShuttle.getWidth() / 2,
-                vShuttlePosition.y - txShuttle.getHeight() / 2,
-                txShuttle.getWidth() / 2, txShuttle.getHeight() / 2,
-                txShuttle.getWidth(), txShuttle.getHeight(),
-                1, 1, rotation, 0,0,
-                txShuttle.getWidth(), txShuttle.getHeight(), false,false);
+        batch.draw(txShuttle, -0.25f, 0f, Base2DScreen.DEF_HEIGHT / 10, Base2DScreen.DEF_HEIGHT / 10);
+        batch.draw(txShuttle, 0f, 0f, Base2DScreen.DEF_HEIGHT / 10, Base2DScreen.DEF_HEIGHT / 10);
         batch.end();
-        if (move) vShuttlePosition.add(vSpeed);
-        final Vector2 vSub = vTargetPosition.cpy().sub(vShuttlePosition);
-        if (vSub.len2() > prevTargetDistance) {
-            move = false;
-            prevTargetDistance = 0;
-        } else {
-            prevTargetDistance = vSub.len2();
-        }
     }
 
     @Override
@@ -68,7 +54,8 @@ public class MainScreen extends Base2DScreen {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         super.touchDown(screenX, screenY, pointer, button);
-        vTargetPosition.set(screenX, Gdx.graphics.getHeight() - screenY);
+        vTargetPosition.set(screenX, this.getScreenBounds().getHeight() - screenY).mul(super.screenToWorld);
+        System.out.println("X: " + vTargetPosition.x + " Y: " + vTargetPosition.y);
         calcParams();
         move = true;
         return false;
