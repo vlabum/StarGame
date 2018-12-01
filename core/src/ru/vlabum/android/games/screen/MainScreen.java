@@ -38,7 +38,7 @@ public class MainScreen extends Base2DScreen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        batch.draw(txShuttle, -0.25f, 0f, Base2DScreen.DEF_HEIGHT / 10, Base2DScreen.DEF_HEIGHT / 10);
+        batch.draw(txShuttle, -2.65f / Base2DScreen.DEF_HEIGHT, 0f, Base2DScreen.DEF_HEIGHT / 10, Base2DScreen.DEF_HEIGHT / 10);
         batch.draw(txShuttle, 0f, 0f, Base2DScreen.DEF_HEIGHT / 10, Base2DScreen.DEF_HEIGHT / 10);
         batch.end();
     }
