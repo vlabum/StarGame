@@ -8,15 +8,13 @@ public class Rect {
     protected float halfWidth; // половина ширины
     protected float halfHeight; // половина высоты
 
-    public Rect() {
-
-    }
+    public Rect() { }
 
     public Rect(Rect from) {
         this(from.position.x, from.position.y, from.getHalfWidth(), from.getHalfHeight());
     }
 
-    public Rect(float x, float y, float halfWidth, float halfHeight) {
+    public Rect(final float x, final float y, final float halfWidth, final float halfHeight) {
         position.set(x, y);
         this.halfWidth = halfWidth;
         this.halfHeight = halfHeight;

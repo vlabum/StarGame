@@ -13,26 +13,33 @@ import ru.vlabum.android.games.math.Rect;
 
 public class Base2DScreen implements Screen, InputProcessor {
 
-    public static float DEF_HEIGHT = 4f;
+    public static final float DEF_HEIGHT = 1f;
 
-    protected SpriteBatch batch;
+    protected final SpriteBatch batch;
 
     private final Rect screenBounds;  // границы области рисования в пикселях
     private final Rect worldBounds;   // границы проекции мировых координат
     private final Rect glBounds;      // дефолтные границы проекции мир - gl
 
-    protected final Matrix4 worldToGl;
-    protected final Matrix3 screenToWorld;
+    private final Matrix4 worldToGl;
+    private final Matrix3 screenToWorld;
 
     private final Vector2 vTouch;
 
     public Base2DScreen() {
+        this.batch = new SpriteBatch();
         this.screenBounds = new Rect();
         this.worldBounds = new Rect();
-        this.glBounds = new Rect(0,0,DEF_HEIGHT, DEF_HEIGHT);
+        this.glBounds = new Rect(0,0, DEF_HEIGHT, DEF_HEIGHT);
         this.worldToGl = new Matrix4();
         this.screenToWorld = new Matrix3();
         this.vTouch = new Vector2();
+    }
+
+    @Override
+    public void show() {
+        batch.getProjectionMatrix().idt();
+        Gdx.input.setInputProcessor(this);
     }
 
     @Override
@@ -40,7 +47,6 @@ public class Base2DScreen implements Screen, InputProcessor {
         screenBounds.setSize(width, height);
         screenBounds.setLeft(0);
         screenBounds.setBottom(0);
-
         final float aspect = width / (float) height;
         worldBounds.setHeight(DEF_HEIGHT);
         worldBounds.setWidth(DEF_HEIGHT * aspect);
@@ -48,6 +54,10 @@ public class Base2DScreen implements Screen, InputProcessor {
         batch.setProjectionMatrix(worldToGl);
         MatrixUtils.calcTransitionMatrix(screenToWorld, screenBounds, worldBounds);
         resize(worldBounds);
+    }
+
+    public void resize(final Rect worldBounds) {
+        System.out.println("resize worldBounds width = " + worldBounds.getWidth() + " worldBounds height = " + worldBounds.getHeight());
     }
 
     public Rect getWorldBounds() {
@@ -60,13 +70,6 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     public Rect getGlBounds() {
         return glBounds;
-    }
-
-    @Override
-    public void show() {
-        batch = new SpriteBatch();
-        batch.getProjectionMatrix().idt();
-        Gdx.input.setInputProcessor(this);
     }
 
     @Override
@@ -140,24 +143,13 @@ public class Base2DScreen implements Screen, InputProcessor {
         return false;
     }
 
+    @Override
+    public void render(float delta) { }
 
     @Override
-    public void render(float delta) {
-
-    }
-
-    public void resize(final Rect worldBounds) {
-        System.out.println("resize worldBounds width = " + worldBounds.getWidth() + " worldBounds height = " + worldBounds.getHeight());
-    }
+    public void pause() { }
 
     @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
+    public void resume() { }
 
 }
