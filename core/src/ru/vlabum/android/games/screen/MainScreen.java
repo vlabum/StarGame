@@ -97,9 +97,7 @@ public class MainScreen extends Base2DScreen {
     @Override
     public boolean touchUp(final Vector2 touch, final int pointer) {
         sprPlayButton.touchUp(touch, pointer);
-        if (sprExitButton.touchUp(touch, pointer)) {
-            Gdx.app.exit();
-        }
+        sprExitButton.touchUp(touch, pointer);
         return false;
     }
 

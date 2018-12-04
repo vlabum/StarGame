@@ -1,5 +1,6 @@
 package ru.vlabum.android.games.sprite;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
@@ -41,7 +42,8 @@ public class ExitSprite extends Sprite {
     @Override
     public boolean touchUp(final Vector2 touch, final int poiter) {
         scale = scaleOrig;
-        return isMe(touch);
+        if (isMe(touch)) Gdx.app.exit();
+        return false;
     }
 
     @Override
