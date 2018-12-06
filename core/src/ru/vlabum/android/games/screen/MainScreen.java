@@ -16,7 +16,7 @@ import ru.vlabum.android.games.sprite.StarSprite;
 
 public class MainScreen extends Base2DScreen {
 
-    private static final int STAR_COUNT = 150;
+    private static final int STAR_COUNT = 64;
 
     private Texture txBackground;
     private TextureAtlas txAtlasMenu;
