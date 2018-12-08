@@ -43,7 +43,7 @@ public class GameScreen extends Base2DScreen {
 
     float animateInterval = 2f;
 
-    private Music music = Gdx.audio.newMusic(Gdx.files.internal("sounds/x3nus__space-syndrome.wav"));
+    private Music music = Gdx.audio.newMusic(Gdx.files.internal("sounds/x3nus__space-syndrome.ogg"));
 
     public GameScreen(Game game) {
         super(game);
