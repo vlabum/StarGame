@@ -8,8 +8,8 @@ import ru.vlabum.android.games.math.Rnd;
 
 public class StarSprite extends Sprite {
 
-    private static final float MAX_SPEED_Y = 0.5f;
-    private static final float MIN_SPEED_Y = 0.1f;
+    private static final float MAX_SPEED_Y = 0.05f;
+    private static final float MIN_SPEED_Y = 0.01f;
 
     private Rect worldBounds;
 
@@ -19,7 +19,7 @@ public class StarSprite extends Sprite {
         super(atlas.findRegion("star"));
         setHeightProportion(0.01f);
         final float speedY = Rnd.nextFloat(-MAX_SPEED_Y, -MIN_SPEED_Y);
-        scale = scale - (scale / (Math.abs(speedY) * 15) ); // эффект далекой звезды (медленнее скорость, дальше звезда)
+        scale = scale - (scale / (Math.abs(speedY) * 150) ); // эффект далекой звезды (медленнее скорость, дальше звезда)
         vSpeed.set(Rnd.nextFloat(-0.005f, 0.005f), speedY);
     }
 

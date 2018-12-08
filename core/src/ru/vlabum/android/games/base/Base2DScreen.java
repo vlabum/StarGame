@@ -1,5 +1,6 @@
 package ru.vlabum.android.games.base;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
@@ -15,18 +16,24 @@ public class Base2DScreen implements Screen, InputProcessor {
 
     public static final float DEF_HEIGHT = 1f;
 
+    protected Game game;
+
     protected final SpriteBatch batch;
 
     private final Rect screenBounds;  // границы области рисования в пикселях
+
     private final Rect worldBounds;   // границы проекции мировых координат
+
     private final Rect glBounds;      // дефолтные границы проекции мир - gl
 
     private final Matrix4 worldToGl;
+
     private final Matrix3 screenToWorld;
 
     private final Vector2 vTouch;
 
-    public Base2DScreen() {
+    public Base2DScreen(final Game game) {
+        this.game = game;
         this.batch = new SpriteBatch();
         this.screenBounds = new Rect();
         this.worldBounds = new Rect();
