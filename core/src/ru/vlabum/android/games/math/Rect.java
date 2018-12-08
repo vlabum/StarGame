@@ -5,12 +5,14 @@ import com.badlogic.gdx.math.Vector2;
 public class Rect {
 
     public final Vector2 position = new Vector2(); // позиция по центру
+
     protected float halfWidth; // половина ширины
+
     protected float halfHeight; // половина высоты
 
     public Rect() { }
 
-    public Rect(Rect from) {
+    public Rect(final Rect from) {
         this(from.position.x, from.position.y, from.getHalfWidth(), from.getHalfHeight());
     }
 
@@ -52,47 +54,55 @@ public class Rect {
         return halfHeight * 2f;
     }
 
-    public void set(Rect from) {
+    public void set(final Rect from) {
         position.set(from.position);
         halfWidth = from.halfWidth;
         halfHeight = from.halfHeight;
     }
 
-    public void setLeft(float left) {
+    public void setLeft(final float left) {
         position.x = left + halfWidth;
     }
 
-    public void setTop(float top) {
+    public void setTop(final float top) {
         position.y = top - halfHeight;
     }
 
-    public void setRight(float right) {
+    public void setRight(final float right) {
         position.x = right - halfWidth;
     }
 
-    public void setBottom(float bottom) {
+    public void setBottom(final float bottom) {
         position.y = bottom + halfHeight;
     }
 
-    public void setWidth(float width) {
+    public void setWidth(final float width) {
         this.halfWidth = width / 2f;
     }
 
-    public void setHeight(float height) {
+    public void setHeight(final float height) {
         this.halfHeight = height / 2f;
     }
 
-    public void setSize(float width, float height) {
+    public void setSize(final float width, final float height) {
         this.halfWidth = width / 2f;
         this.halfHeight = height / 2f;
     }
 
-    public boolean isMe(Vector2 touch) {
+    public boolean isMe(final Vector2 touch) {
         return touch.x >= getLeft() && touch.x <= getRight() && touch.y >= getBottom() && touch.y <= getTop();
     }
 
-    public boolean isOutside(Rect other) {
+    public boolean isOutside(final Rect other) {
         return getLeft() > other.getRight() || getRight() < other.getLeft() || getBottom() > other.getTop() || getTop() < other.getBottom();
+    }
+
+    public boolean isCollision(final Rect other) {
+        if (Math.abs(other.position.x - this.position.x) <= halfWidth + other.halfWidth
+                && Math.abs(other.position.y - this.position.y) <= halfHeight + other.halfHeight) {
+            return true;
+        }
+        return false;
     }
 
     @Override

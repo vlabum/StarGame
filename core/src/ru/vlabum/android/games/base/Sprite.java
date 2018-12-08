@@ -1,21 +1,34 @@
 package ru.vlabum.android.games.base;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.vlabum.android.games.math.Rect;
+import ru.vlabum.android.games.utils.Regions;
 
 public class Sprite extends Rect {
 
     protected float angle;
+
     protected float scale = 1f;
-    protected final TextureRegion[] regions;
+
+    protected TextureRegion[] regions;
+
     protected int currentFrame;
+
+    private boolean isDestroyed;
+
+    public Sprite() {}
 
     public Sprite(final TextureRegion region) {
         regions = new TextureRegion[1];
         regions[0] = region;
+    }
+
+    public Sprite(final TextureRegion region, final int rows, final int cols, final int frames) {
+        regions = Regions.split(region, rows, cols, frames);
     }
 
     public void draw(final SpriteBatch batch) {
@@ -49,6 +62,10 @@ public class Sprite extends Rect {
         return false;
     }
 
+    public void setCurrentFrame(final int currentFrame) {
+        this.currentFrame = currentFrame;
+    }
+
     public float getAngle() {
         return angle;
     }
@@ -63,6 +80,14 @@ public class Sprite extends Rect {
 
     public void setScale(final float scale) {
         this.scale = scale;
+    }
+
+    public boolean isDestroyed() {
+        return isDestroyed;
+    }
+
+    public void setDestroyed(boolean destroyed) {
+        isDestroyed = destroyed;
     }
 
 }
