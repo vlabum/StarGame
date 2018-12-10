@@ -15,8 +15,17 @@ public class Rnd {
      * @param max максимальное значение случайного числа
      * @return результат
      */
-    public static float nextFloat(float min, float max) {
+    public static float nextFloat(final float min, final float max) {
         return random.nextFloat() * (max - min) + min;
+    }
+
+    /**
+     * Сгенерировать случайное целое число
+     * @param bound предел значения
+     * @return результат
+     */
+    public static int nextInt(final int bound) {
+        return random.nextInt(bound);
     }
 
 }

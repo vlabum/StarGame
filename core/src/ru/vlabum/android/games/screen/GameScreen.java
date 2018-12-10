@@ -18,31 +18,22 @@ import ru.vlabum.android.games.sprite.Bullet;
 import ru.vlabum.android.games.sprite.EnemyShip;
 import ru.vlabum.android.games.sprite.MainShip;
 import ru.vlabum.android.games.sprite.StarSprite;
+import ru.vlabum.android.games.utils.EnemiesEmitter;
 
 public class GameScreen extends Base2DScreen {
 
     private static final int STAR_COUNT = 32;
 
     private Texture txBackground;
-
     private TextureAtlas txAtlas;
-
     private Background background;
-
     private StarSprite[] stars;
-
     private MainShip mainShip;
-
     private BulletPool bulletPool;
-
     private EnemyShipPool enemyShipPool;
-
-    private Rect worldBounds;
-
+    private EnemiesEmitter enemiesEmitter;
     float animateTimer = 0f;
-
     float animateInterval = 2f;
-
     private Music music = Gdx.audio.newMusic(Gdx.files.internal("sounds/x3nus__space-syndrome.ogg"));
 
     public GameScreen(Game game) {
@@ -60,8 +51,9 @@ public class GameScreen extends Base2DScreen {
             stars[i] = new StarSprite(txAtlas);
         }
         bulletPool = new BulletPool();
-        enemyShipPool = new EnemyShipPool(txAtlas, bulletPool);
         mainShip = new MainShip(txAtlas, bulletPool);
+        enemyShipPool = new EnemyShipPool(txAtlas, bulletPool, mainShip, worldBounds);
+        enemiesEmitter = new EnemiesEmitter(worldBounds, enemyShipPool, txAtlas);
         music.setLooping(true);
         music.play();
     }
@@ -86,6 +78,7 @@ public class GameScreen extends Base2DScreen {
             enemyStart();
         }
         enemyShipPool.updateActiveSprites(delta);
+        enemiesEmitter.generate(delta);
     }
 
     private void checkCollisions() {
@@ -176,8 +169,8 @@ public class GameScreen extends Base2DScreen {
 
     public void enemyStart() {
         if (worldBounds == null) return;
-        EnemyShip enemyShip = enemyShipPool.obtain();
-        enemyShip.set(worldBounds, 0.15f);
+//        EnemyShip enemyShip = enemyShipPool.obtain();
+//        enemyShip.set(worldBounds, 0.15f);
     }
 
 }

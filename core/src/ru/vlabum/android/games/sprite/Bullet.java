@@ -25,15 +25,15 @@ public class Bullet extends Sprite {
     }
 
     public void set(
-            Object owner,
-            TextureRegion region,
-            Vector2 position0,
-            Vector2 speed0,
-            float height,
-            Rect worldBounds,
-            int damage,
-            float positionShiftX,
-            float positionShiftY
+            final Object owner,
+            final TextureRegion region,
+            final Vector2 position0,
+            final Vector2 speed0,
+            final float height,
+            final Rect worldBounds,
+            final int damage,
+            final float positionShiftX,
+            final float positionShiftY
     ) {
         this.owner = owner;
         this.regions[0] = region;

@@ -17,19 +17,12 @@ public class Base2DScreen implements Screen, InputProcessor {
     public static final float DEF_HEIGHT = 1f;
 
     protected Game game;
-
     protected final SpriteBatch batch;
-
     private final Rect screenBounds;  // границы области рисования в пикселях
-
-    private final Rect worldBounds;   // границы проекции мировых координат
-
+    protected Rect worldBounds;   // границы проекции мировых координат
     private final Rect glBounds;      // дефолтные границы проекции мир - gl
-
     private final Matrix4 worldToGl;
-
     private final Matrix3 screenToWorld;
-
     private final Vector2 vTouch;
 
     public Base2DScreen(final Game game) {

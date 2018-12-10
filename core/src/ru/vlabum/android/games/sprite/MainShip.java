@@ -6,70 +6,80 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.vlabum.android.games.base.Sprite;
+import ru.vlabum.android.games.base.Ship;
 import ru.vlabum.android.games.math.Rect;
 import ru.vlabum.android.games.pool.BulletPool;
 
-public class MainShip extends Sprite {
+public class MainShip extends Ship {
+
+    private static final int INVALID_POINTER = -1;  // когда нет номера пальца
 
     private static final int CODE_LEFT1 = Input.Keys.LEFT;
-
     private static final int CODE_LEFT2 = Input.Keys.A;
-
     private static final int CODE_RIGHT1 = Input.Keys.RIGHT;
-
     private static final int CODE_RIGHT2 = Input.Keys.D;
+    private static final int CODE_SHOOT = Input.Keys.SPACE;
 
-    private final TextureAtlas atlas;
+    private boolean pressedLeft = false;        // нажата левая сторона
+    private boolean pressedRight = false;       // нажата правая сторона
+    private int leftPointer = INVALID_POINTER;  // номер пальца на левой стороне
+    private int rightPointer = INVALID_POINTER; // номер пальца на правой стороне
 
     private BulletPool bulletPool;
-
-    private Rect worldBounds;
-
-    private boolean pressedLeft = false;
-
-    private boolean pressedRight = false;
-
     private final Vector2 v0 = new Vector2(0.4f, 0);
-
     private final Vector2 v = new Vector2();
 
-    private Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/leszek_szary_shoot1.wav"));
-
     public MainShip(final TextureAtlas atlas, final BulletPool bulletPool) {
-        super(atlas.findRegion("main_ship"), 1, 2, 2);
+        super(atlas.findRegion("main_ship"), 1, 2, 2, null);
         setHeightProportion(0.15f);
+        this.shootSound = Gdx.audio.newSound(Gdx.files.internal("sounds/leszek_szary_shoot1.wav"));
         this.bulletPool = bulletPool;
-        this.atlas = atlas;
+        this.reloadInterval = 0.2f;
+        this.bulletRegion = atlas.findRegion("bulletMainShip");
+        this.bulletHeight = 0.01f;
+        this.bulletV.set(0, 0.5f);
+        this.bulletDamage = 1;
+        this.bulletRegion = atlas.findRegion("bulletMainShip");
     }
 
     @Override
     public void update(final float delta) {
         super.update(delta);
         position.mulAdd(v, delta);
-        if (getLeft() < -worldBounds.getHalfWidth()) stop();
-        if (getRight() > worldBounds.getHalfWidth()) stop();
+        reloadTimer += delta;
+        if (reloadTimer >= reloadInterval) {
+            reloadTimer = 0f;
+            shoot();
+        }
+        if (getRight() > worldBounds.getRight()) {
+            setRight(worldBounds.getRight());
+            stop();
+        }
+        if (getLeft() < worldBounds.getLeft()) {
+            setLeft(worldBounds.getLeft());
+            stop();
+        }
     }
 
     @Override
     public void resize(final Rect worldBounds) {
-        this.worldBounds = worldBounds;
+        super.resize(worldBounds);
         setBottom(worldBounds.getBottom() + 0.05f);
     }
 
     public boolean keyDown(final int keyCode) {
         switch (keyCode) {
-            case Input.Keys.A:
-            case Input.Keys.LEFT:
+            case CODE_LEFT1:
+            case CODE_LEFT2:
                 pressedLeft = true;
                 moveLeft();
                 break;
-            case Input.Keys.D:
-            case Input.Keys.RIGHT:
+            case CODE_RIGHT1:
+            case CODE_RIGHT2:
                 pressedRight = true;
                 moveRight();
                 break;
-            case Input.Keys.SPACE:
+            case CODE_SHOOT:
                 shoot();
                 break;
         }
@@ -96,17 +106,30 @@ public class MainShip extends Sprite {
 
     @Override
     public boolean touchDown(final Vector2 touch, final int pointer) {
-        if (touch.x > 0) keyDown(CODE_RIGHT1);
-        if (touch.x < 0) keyDown(CODE_LEFT1);
-        return super.touchDown(touch, pointer);
+        if (touch.x < worldBounds.position.x) {
+            if (leftPointer != INVALID_POINTER) return false;
+            leftPointer = pointer;
+            moveLeft();
+        } else {
+            if (rightPointer != INVALID_POINTER) return false;
+            rightPointer = pointer;
+            moveRight();
+        }
+        return false;
     }
 
     @Override
     public boolean touchUp(final Vector2 touch, final int pointer) {
-        if (touch.x > 0) keyUp(CODE_RIGHT1);
-        if (touch.x < 0) keyUp(CODE_LEFT1);
-        if (v.x != 0) stop();
-        return super.touchUp(touch, pointer);
+        if (pointer == leftPointer) {
+            leftPointer = INVALID_POINTER;
+            if (rightPointer != INVALID_POINTER) moveRight();
+            else stop();
+        } else if (pointer == rightPointer) {
+            rightPointer = INVALID_POINTER;
+            if (leftPointer != INVALID_POINTER) moveLeft();
+            else stop();
+        }
+        return false;
     }
 
     private void moveRight() {
@@ -121,13 +144,14 @@ public class MainShip extends Sprite {
         v.setZero();
     }
 
+    @Override
     public void shoot() {
         final Bullet bulletR = bulletPool.obtain();
         final Bullet bulletL = bulletPool.obtain();
         final Bullet bulletC = bulletPool.obtain();
         bulletR.set(
                 this,
-                atlas.findRegion("bulletMainShip"),
+                bulletRegion,
                 position,
                 new Vector2(0, 0.5f),
                 0.01f,
@@ -138,7 +162,7 @@ public class MainShip extends Sprite {
         );
         bulletL.set(
                 this,
-                atlas.findRegion("bulletMainShip"),
+                bulletRegion,
                 position,
                 new Vector2(0, 0.5f),
                 0.01f,
@@ -149,7 +173,7 @@ public class MainShip extends Sprite {
         );
         bulletC.set(
                 this,
-                atlas.findRegion("bulletMainShip"),
+                bulletRegion,
                 position,
                 new Vector2(0, 0.5f),
                 0.01f,
@@ -158,11 +182,12 @@ public class MainShip extends Sprite {
                 0,
                 halfHeight
         );
-        sound.play(1.0f);
+        shootSound.play(1.0f);
     }
 
     public void dispose() {
-        sound.dispose();
+        shootSound.dispose();
+        super.dispose();
     }
 
 }
