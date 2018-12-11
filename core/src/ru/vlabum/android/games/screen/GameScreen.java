@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import org.jetbrains.annotations.NotNull;
+
 import ru.vlabum.android.games.base.Base2DScreen;
 import ru.vlabum.android.games.math.Rect;
 import ru.vlabum.android.games.pool.BulletPool;
@@ -36,7 +38,7 @@ public class GameScreen extends Base2DScreen {
     float animateInterval = 2f;
     private Music music = Gdx.audio.newMusic(Gdx.files.internal("sounds/x3nus__space-syndrome.ogg"));
 
-    public GameScreen(Game game) {
+    public GameScreen(@NotNull Game game) {
         super(game);
     }
 
@@ -72,11 +74,6 @@ public class GameScreen extends Base2DScreen {
         }
         mainShip.update(delta);
         bulletPool.updateActiveSprites(delta);
-        animateTimer += delta;
-        if (animateTimer >= animateInterval) {
-            animateTimer = 0f; // действие
-            enemyStart();
-        }
         enemyShipPool.updateActiveSprites(delta);
         enemiesEmitter.generate(delta);
     }
@@ -84,7 +81,7 @@ public class GameScreen extends Base2DScreen {
     private void checkCollisions() {
         boolean mainShipCollision = false;
         boolean enemyShipCollisionBullet = false;
-        for (EnemyShip enemySheep : enemyShipPool.getActiveObjects()) {
+        for (final EnemyShip enemySheep : enemyShipPool.getActiveObjects()) {
 
             for (Bullet bullet : bulletPool.getActiveObjects()) {
                 if (enemySheep.isCollision(bullet)) enemyShipCollisionBullet = true;
@@ -109,7 +106,6 @@ public class GameScreen extends Base2DScreen {
     private void draw() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         batch.begin();
         background.draw(batch);
         for (StarSprite star : stars) {
@@ -122,7 +118,7 @@ public class GameScreen extends Base2DScreen {
     }
 
     @Override
-    public void resize(final Rect worldBounds) {
+    public void resize(@NotNull final Rect worldBounds) {
         super.resize(worldBounds);
         this.worldBounds = worldBounds;
         background.resize(worldBounds);
@@ -144,13 +140,13 @@ public class GameScreen extends Base2DScreen {
     }
 
     @Override
-    public boolean touchDown(final Vector2 touch, final int pointer) {
+    public boolean touchDown(@NotNull final Vector2 touch, @NotNull final int pointer) {
         mainShip.touchDown(touch, pointer);
         return super.touchDown(touch, pointer);
     }
 
     @Override
-    public boolean touchUp(final Vector2 touch, final int pointer) {
+    public boolean touchUp(@NotNull final Vector2 touch, @NotNull final int pointer) {
         mainShip.touchUp(touch, pointer);
         return super.touchUp(touch, pointer);
     }
@@ -165,12 +161,6 @@ public class GameScreen extends Base2DScreen {
     public boolean keyUp(final int keycode) {
         mainShip.keyUp(keycode);
         return super.keyUp(keycode);
-    }
-
-    public void enemyStart() {
-        if (worldBounds == null) return;
-//        EnemyShip enemyShip = enemyShipPool.obtain();
-//        enemyShip.set(worldBounds, 0.15f);
     }
 
 }

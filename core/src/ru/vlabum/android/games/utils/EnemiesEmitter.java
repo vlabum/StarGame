@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import org.jetbrains.annotations.NotNull;
+
 import ru.vlabum.android.games.math.Rect;
 import ru.vlabum.android.games.math.Rnd;
 import ru.vlabum.android.games.pool.EnemyShipPool;
@@ -39,7 +41,11 @@ public class EnemiesEmitter {
 
     private EnemyShipPool enemyPool;
 
-    public EnemiesEmitter(final Rect worldBounds, final EnemyShipPool enemyPool, final TextureAtlas atlas) {
+    public EnemiesEmitter(
+            @NotNull final Rect worldBounds,
+            @NotNull final EnemyShipPool enemyPool,
+            @NotNull final TextureAtlas atlas
+    ) {
         this.worldBounds = worldBounds;
         this.enemyPool = enemyPool;
         this.enemyRegion[SMALL] = Regions.split(atlas.findRegion("enemy0"), 1, 2, 2);
@@ -50,28 +56,27 @@ public class EnemiesEmitter {
 
     public void generate(final float delta) {
         generateTimer += delta;
-        final int num = Rnd.nextInt(LARGE + 1);
-        generateShip(num);
-
+        if (generateTimer >= generateInterval) {
+            generateTimer = 0f;
+            final int num = Rnd.nextInt(LARGE + 1);
+            generateShip(num);
+        }
     }
 
     private void generateShip(final int num) {
-        if (generateTimer >= generateInterval) {
-            generateTimer = 0f;
-            EnemyShip enemy = enemyPool.obtain();
-            enemy.set(
-                    enemyRegion[num],
-                    enemyV[num],
-                    bulletRegion,
-                    ENEMY_BULLET_HEIGHT[num],
-                    ENEMY_BULLET_VY[num],
-                    ENEMY_BULLET_DAMAGE[num],
-                    ENEMY_RELOAD_INTERVAL[num],
-                    ENEMY_HEIGHT[num],
-                    ENEMY_HP[num]
-            );
-            enemy.position.x = Rnd.nextFloat(worldBounds.getLeft() + enemy.getHalfWidth(), worldBounds.getRight() - enemy.getHalfWidth());
-            enemy.setBottom(worldBounds.getTop());
-        }
+        EnemyShip enemy = enemyPool.obtain();
+        enemy.set(
+                enemyRegion[num],
+                enemyV[num],
+                bulletRegion,
+                ENEMY_BULLET_HEIGHT[num],
+                ENEMY_BULLET_VY[num],
+                ENEMY_BULLET_DAMAGE[num],
+                ENEMY_RELOAD_INTERVAL[num],
+                ENEMY_HEIGHT[num],
+                ENEMY_HP[num]
+        );
+        enemy.position.x = Rnd.nextFloat(worldBounds.getLeft() + enemy.getHalfWidth(), worldBounds.getRight() - enemy.getHalfWidth());
+        enemy.setBottom(worldBounds.getTop());
     }
 }
