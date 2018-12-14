@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.vlabum.android.games.base.Ship;
 import ru.vlabum.android.games.math.Rect;
 import ru.vlabum.android.games.pool.BulletPool;
+import ru.vlabum.android.games.pool.ExplosionPool;
 
 public class EnemyShip extends Ship {
 
@@ -17,19 +18,25 @@ public class EnemyShip extends Ship {
     private Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/leszek_szary_shoot1.wav"));
     private boolean isFarAway = true;
 
-    public EnemyShip(final TextureAtlas atlas, final BulletPool bulletPool, final MainShip mainShip, final Rect worldBounds) {
+    public EnemyShip(
+            final TextureAtlas atlas,
+            final ExplosionPool explosionPool,
+            final BulletPool bulletPool,
+            final MainShip mainShip,
+            final Rect worldBounds) {
         this.bulletPool = bulletPool;
         this.bulletRegion = atlas.findRegion("bulletEnemy");
         this.mainShip = mainShip;
         this.worldBounds = worldBounds;
         this.v.set(v0);
+        this.explosionPool = explosionPool;
     }
 
     @Override
     public void update(final float delta) {
         super.update(delta);
         position.mulAdd(v, delta);
-        if (getBottom() <= worldBounds.getBottom()) {
+        if (getTop() <= worldBounds.getBottom()) {
             this.setDestroyed(true);
         }
         reloadTimer += delta;
@@ -49,7 +56,8 @@ public class EnemyShip extends Ship {
             int bulletDamage,
             float reloadInterval,
             float height,
-            int hp
+            int hp,
+            int score
     ) {
         this.regions = regions;
         this.v0.set(v0);
@@ -59,6 +67,7 @@ public class EnemyShip extends Ship {
         this.bulletDamage = bulletDamage;
         this.reloadInterval = reloadInterval;
         this.hp = hp;
+        this.score = score;
         setHeightProportion(height);
         reloadTimer = reloadInterval;
         v.set(v0);
@@ -71,14 +80,27 @@ public class EnemyShip extends Ship {
                 this,
                 bulletRegion,
                 position,
-                new Vector2(0, -0.5f),
-                0.01f,
+                bulletV,
+                bulletHeight,
                 worldBounds,
-                1,
+                bulletDamage,
                 0,
                 -halfHeight
         );
         sound.play(1.0f);
+    }
+
+    public boolean isBulletCollision(Rect bullet) {
+        return !(bullet.getRight() < getLeft()
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > getTop()
+                || bullet.getTop() < position.y);
+    }
+
+    @Override
+    public void boom() {
+        super.boom();
+        mainShip.addScore(score);
     }
 
     public void dispose() {

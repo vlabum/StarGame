@@ -98,11 +98,10 @@ public class Rect {
     }
 
     public boolean isCollision(final Rect other) {
-        if (Math.abs(other.position.x - this.position.x) <= halfWidth + other.halfWidth
-                && Math.abs(other.position.y - this.position.y) <= halfHeight + other.halfHeight) {
-            return true;
-        }
-        return false;
+        return !(other.getRight() < getLeft()
+                || other.getLeft() > getRight()
+                || other.getBottom() > getTop()
+                || other.getTop() < getBottom());
     }
 
     @Override

@@ -11,13 +11,9 @@ import ru.vlabum.android.games.utils.Regions;
 public class Sprite extends Rect {
 
     protected float angle;
-
     protected float scale = 1f;
-
     protected TextureRegion[] regions;
-
     protected int currentFrame;
-
     private boolean isDestroyed;
 
     public Sprite() {}
