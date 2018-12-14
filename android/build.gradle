@@ -22,6 +22,7 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+        project.ext.set("archivesBaseName", "MyName-" + defaultConfig.versionName);
     }
     buildTypes {
         release {
@@ -124,7 +125,7 @@ eclipse {
 idea {
     module {
         sourceDirs += file("src");
-        scopes = [ COMPILE: [plus:[project.configurations.compile]]]        
+        scopes = [ COMPILE: [plus:[project.configurations.compile]]]
 
         iml {
             withXml {

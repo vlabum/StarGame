@@ -18,15 +18,16 @@ public class EnemiesEmitter {
     private static int LARGE = 2;
 
     private static final float[] ENEMY_HEIGHT           = new float[]   {  0.1f,   0.1f,  0.1f };
-    private static final float[] ENEMY_BULLET_HEIGHT    = new float[]   { 0.01f, 0.015f,  0.2f };
-    private static final float[] ENEMY_BULLET_VY        = new float[]   { -0.3f,  -0.3f, -0.3f };
-    private static final int[]   ENEMY_BULLET_DAMAGE    = new int[]     {     1,      2,     3 };
-    private static final float[] ENEMY_RELOAD_INTERVAL  = new float[]   {    1f,     1f,    1f };
+    private static final float[] ENEMY_BULLET_HEIGHT    = new float[]   { 0.01f, 0.015f, 0.02f };
+    private static final float[] ENEMY_BULLET_VY        = new float[]   { -0.5f,  -0.5f, -0.5f };
+    private static final float[] ENEMY_RELOAD_INTERVAL  = new float[]   {  1.5f,   1.5f,  1.5f };
+    private static final int[]   ENEMY_BULLET_DAMAGE    = new int[]     {     1,      5,    10 };
     private static final int[]   ENEMY_HP               = new int[]     {     1,      5,    10 };
+    private static final int[]   ENEMY_SCORE            = new int[]     {     1,      3,     7 };
 
     private Rect worldBounds;
 
-    private float generateInterval = 4f;
+    private float generateInterval = 3f;
     private float generateTimer;
 
     private TextureRegion[][] enemyRegion = new TextureRegion[3][];
@@ -58,8 +59,10 @@ public class EnemiesEmitter {
         generateTimer += delta;
         if (generateTimer >= generateInterval) {
             generateTimer = 0f;
-            final int num = Rnd.nextInt(LARGE + 1);
-            generateShip(num);
+            final float type = (float) Math.random();
+            if (type < 0.7f) generateShip(SMALL);
+            else if (type < 0.9f) generateShip(MIDDLE);
+            else generateShip(LARGE);
         }
     }
 
@@ -74,9 +77,11 @@ public class EnemiesEmitter {
                 ENEMY_BULLET_DAMAGE[num],
                 ENEMY_RELOAD_INTERVAL[num],
                 ENEMY_HEIGHT[num],
-                ENEMY_HP[num]
+                ENEMY_HP[num],
+                ENEMY_SCORE[num]
         );
         enemy.position.x = Rnd.nextFloat(worldBounds.getLeft() + enemy.getHalfWidth(), worldBounds.getRight() - enemy.getHalfWidth());
         enemy.setBottom(worldBounds.getTop());
     }
+
 }

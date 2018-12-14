@@ -9,18 +9,15 @@ import ru.vlabum.android.games.math.Rect;
 public class Bullet extends Sprite {
 
     private Vector2 speed = new Vector2();
-
     private Rect worldBounds;
-
     private int damage;
-
     private Object owner;
 
     public Bullet() {
         regions = new TextureRegion[1];
     }
 
-    public Bullet(TextureRegion region) {
+    public Bullet(final TextureRegion region) {
         super(region);
     }
 

@@ -2,13 +2,13 @@ package ru.vlabum.android.games.sprite;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.vlabum.android.games.base.Ship;
 import ru.vlabum.android.games.math.Rect;
 import ru.vlabum.android.games.pool.BulletPool;
+import ru.vlabum.android.games.pool.ExplosionPool;
 
 public class MainShip extends Ship {
 
@@ -29,7 +29,11 @@ public class MainShip extends Ship {
     private final Vector2 v0 = new Vector2(0.4f, 0);
     private final Vector2 v = new Vector2();
 
-    public MainShip(final TextureAtlas atlas, final BulletPool bulletPool) {
+    public MainShip(
+            final TextureAtlas atlas,
+            final BulletPool bulletPool,
+            final ExplosionPool explosionPool
+    ) {
         super(atlas.findRegion("main_ship"), 1, 2, 2, null);
         setHeightProportion(0.15f);
         this.shootSound = Gdx.audio.newSound(Gdx.files.internal("sounds/leszek_szary_shoot1.wav"));
@@ -40,6 +44,8 @@ public class MainShip extends Ship {
         this.bulletV.set(0, 0.5f);
         this.bulletDamage = 1;
         this.bulletRegion = atlas.findRegion("bulletMainShip");
+        this.explosionPool = explosionPool;
+        this.hp = 10;
     }
 
     @Override
@@ -146,43 +152,28 @@ public class MainShip extends Ship {
 
     @Override
     public void shoot() {
-        final Bullet bulletR = bulletPool.obtain();
-        final Bullet bulletL = bulletPool.obtain();
+//        final Bullet bulletR = bulletPool.obtain();
+//        final Bullet bulletL = bulletPool.obtain();
         final Bullet bulletC = bulletPool.obtain();
-        bulletR.set(
-                this,
-                bulletRegion,
-                position,
-                new Vector2(0, 0.5f),
-                0.01f,
-                worldBounds,
-                1,
-                -halfWidth / 1.3f,
-                halfHeight / 2
-        );
-        bulletL.set(
-                this,
-                bulletRegion,
-                position,
-                new Vector2(0, 0.5f),
-                0.01f,
-                worldBounds,
-                1,
-                halfWidth / 1.3f,
-                halfHeight / 2
-        );
+//        bulletR.set(this,bulletRegion,position,new Vector2(0, 0.5f),0.01f,
+//                worldBounds,1,-halfWidth / 1.3f,halfHeight / 2);
+//        bulletL.set(this,bulletRegion,position,new Vector2(0, 0.5f),0.01f,
+//                worldBounds,1,halfWidth / 1.3f,halfHeight / 2);
         bulletC.set(
-                this,
-                bulletRegion,
-                position,
-                new Vector2(0, 0.5f),
-                0.01f,
-                worldBounds,
-                1,
-                0,
-                halfHeight
-        );
+                this, bulletRegion, position, new Vector2(0, 0.5f), 0.01f,
+                worldBounds, 1, 0, halfHeight );
         shootSound.play(1.0f);
+    }
+
+    public boolean isBulletCollision(Rect bullet) {
+        return !(bullet.getRight() < getLeft()
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > position.y
+                || bullet.getTop() < getBottom());
+    }
+
+    public void addScore(int score) {
+        this.score += score;
     }
 
     public void dispose() {
