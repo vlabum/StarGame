@@ -87,7 +87,7 @@ public class EnemyShip extends Ship {
                 0,
                 -halfHeight
         );
-        sound.play(1.0f);
+        sound.play(0.7f);
     }
 
     public boolean isBulletCollision(Rect bullet) {

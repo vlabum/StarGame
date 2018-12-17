@@ -7,7 +7,7 @@ android {
             storePassword 'android'
         }
     }
-    buildToolsVersion "28.0.3"
+    buildToolsVersion '28.0.3'
     compileSdkVersion 28
     sourceSets {
         main {
@@ -26,7 +26,7 @@ android {
     }
     defaultConfig {
         applicationId "ru.vlabum.android.games"
-        minSdkVersion 26
+        minSdkVersion 9
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -36,6 +36,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
         debug {
             signingConfig signingConfigs.config
@@ -107,8 +108,8 @@ eclipse {
     }
 
     jdt {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = 1.6
+        targetCompatibility = 1.6
     }
 
     classpath {

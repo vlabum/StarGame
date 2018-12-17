@@ -27,8 +27,14 @@ public class EnemiesEmitter {
 
     private Rect worldBounds;
 
-    private float generateInterval = 3f;
+    private static final float generateIntervalNewGame = 3f;
+    private float generateInterval = generateIntervalNewGame;
     private float generateTimer;
+    private int stage = 1;
+
+    public int getStage() {
+        return stage;
+    }
 
     private TextureRegion[][] enemyRegion = new TextureRegion[3][];
 
@@ -55,7 +61,16 @@ public class EnemiesEmitter {
         this.bulletRegion = atlas.findRegion("bulletEnemy");
     }
 
-    public void generate(final float delta) {
+    public void newGame() {
+        stage = 1;
+        generateInterval = generateIntervalNewGame;
+    }
+
+    public void generate(final float delta, final int frags) {
+        stage = frags / 10 + 1;
+        if ((stage) % 5 == 0 && stage > 1) generateInterval = 0.2f; // каждый уровень кратный 5-и будет волна кораблей
+        else if (generateInterval <= 0.4f) generateInterval = 0.4f;
+        else generateInterval = generateIntervalNewGame - (float) (stage - 1) / 5; // TODO: подобрать мат.функцию, ограниченную сверху
         generateTimer += delta;
         if (generateTimer >= generateInterval) {
             generateTimer = 0f;
@@ -74,7 +89,7 @@ public class EnemiesEmitter {
                 bulletRegion,
                 ENEMY_BULLET_HEIGHT[num],
                 ENEMY_BULLET_VY[num],
-                ENEMY_BULLET_DAMAGE[num],
+                ENEMY_BULLET_DAMAGE[num] + (stage - 1),
                 ENEMY_RELOAD_INTERVAL[num],
                 ENEMY_HEIGHT[num],
                 ENEMY_HP[num],

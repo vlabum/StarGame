@@ -20,6 +20,10 @@ public class MainShip extends Ship {
     private static final int CODE_RIGHT2 = Input.Keys.D;
     private static final int CODE_SHOOT = Input.Keys.SPACE;
 
+    private static final int SCORE1 = 30;
+    private static final int SCORE2 = 60;
+    private static final int SCORE3 = 100;
+
     private boolean pressedLeft = false;        // нажата левая сторона
     private boolean pressedRight = false;       // нажата правая сторона
     private int leftPointer = INVALID_POINTER;  // номер пальца на левой стороне
@@ -45,7 +49,7 @@ public class MainShip extends Ship {
         this.bulletDamage = 1;
         this.bulletRegion = atlas.findRegion("bulletMainShip");
         this.explosionPool = explosionPool;
-        this.hp = 10;
+        this.hp = 100;
     }
 
     @Override
@@ -151,18 +155,39 @@ public class MainShip extends Ship {
     }
 
     @Override
+    public void newGame() {
+        super.newGame();
+        hp = 100;
+        stop();
+    }
+
+    @Override
     public void shoot() {
-//        final Bullet bulletR = bulletPool.obtain();
-//        final Bullet bulletL = bulletPool.obtain();
-        final Bullet bulletC = bulletPool.obtain();
-//        bulletR.set(this,bulletRegion,position,new Vector2(0, 0.5f),0.01f,
-//                worldBounds,1,-halfWidth / 1.3f,halfHeight / 2);
-//        bulletL.set(this,bulletRegion,position,new Vector2(0, 0.5f),0.01f,
-//                worldBounds,1,halfWidth / 1.3f,halfHeight / 2);
-        bulletC.set(
-                this, bulletRegion, position, new Vector2(0, 0.5f), 0.01f,
-                worldBounds, 1, 0, halfHeight );
-        shootSound.play(1.0f);
+        if (score < SCORE1 || score >= SCORE2) {
+            final Bullet bulletC = bulletPool.obtain();
+            bulletC.set(
+                    this, bulletRegion, position, new Vector2(0, 0.5f), 0.01f,
+                    worldBounds, 1, 0, halfHeight);
+        }
+        if (score >= SCORE1) {
+            final Bullet bulletR = bulletPool.obtain();
+            final Bullet bulletL = bulletPool.obtain();
+            bulletR.set(this, bulletRegion, position, new Vector2(0, 0.5f), 0.01f,
+                    worldBounds, 1, -halfWidth / 1.3f, halfHeight / 2);
+            bulletL.set(this, bulletRegion, position, new Vector2(0, 0.5f), 0.01f,
+                    worldBounds, 1, halfWidth / 1.3f, halfHeight / 2);
+            shootSound.play(1.0f);
+        }
+        if (score >= SCORE3) {
+            final Bullet bulletR = bulletPool.obtain();
+            final Bullet bulletL = bulletPool.obtain();
+            bulletR.set(this, bulletRegion, position, new Vector2(0, 0.5f), 0.01f,
+                    worldBounds, 1, -halfWidth / 1.3f / 2f , halfHeight / 4);
+            bulletL.set(this, bulletRegion, position, new Vector2(0, 0.5f), 0.01f,
+                    worldBounds, 1, halfWidth / 1.3f / 2f, halfHeight / 4);
+            shootSound.play(0.7f);
+        }
+        shootSound.play(0.7f);
     }
 
     public boolean isBulletCollision(Rect bullet) {
@@ -174,6 +199,7 @@ public class MainShip extends Ship {
 
     public void addScore(int score) {
         this.score += score;
+        if (this.score % 100 == 0) hp = 100; // бонус
     }
 
     public void dispose() {

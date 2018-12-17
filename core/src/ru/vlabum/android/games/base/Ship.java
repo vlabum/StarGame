@@ -91,8 +91,11 @@ public class Ship extends Sprite {
         return hp;
     }
 
-    public void restore() {
+    public void newGame() {
         this.hp = 10;
+        position.x = worldBounds.position.x;
+        resize(worldBounds);
+        setScore(0);
         setDestroyed(false);
     }
 }

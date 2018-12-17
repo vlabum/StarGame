@@ -49,8 +49,6 @@ project(":desktop") {
         implementation project(":core")
         implementation "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        //implementation "org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:1.0.0"
-        // https://mvnrepository.com/artifact/org.jetbrains/annotations
         implementation group: 'org.jetbrains', name: 'annotations', version: '16.0.3'
     }
 }
@@ -63,15 +61,12 @@ project(":android") {
     dependencies {
         implementation project(":core")
         implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
-        //implementation "org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:1.0.0"
-        // https://mvnrepository.com/artifact/org.jetbrains/annotations
         implementation group: 'org.jetbrains', name: 'annotations', version: '16.0.3'
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
-        
     }
 }
 
@@ -86,8 +81,6 @@ project(":ios") {
         implementation "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
         implementation "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-        //implementation "org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:1.0.0"
-        // https://mvnrepository.com/artifact/org.jetbrains/annotations
         implementation group: 'org.jetbrains', name: 'annotations', version: '16.0.3'
 
     }
@@ -99,9 +92,8 @@ project(":core") {
 
     dependencies {
         implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
-        //implementation "org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:1.0.0"
-        // https://mvnrepository.com/artifact/org.jetbrains/annotations
         implementation group: 'org.jetbrains', name: 'annotations', version: '16.0.3'
+        implementation group: 'net.sf.trove4j', name: 'trove4j', version: '3.0.3'
     }
 }
 
