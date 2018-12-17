@@ -6,23 +6,23 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 import ru.vlabum.android.games.base.Base2DScreen;
+import ru.vlabum.android.games.base.Font;
 import ru.vlabum.android.games.math.Rect;
 import ru.vlabum.android.games.pool.BulletPool;
 import ru.vlabum.android.games.pool.EnemyShipPool;
 import ru.vlabum.android.games.pool.ExplosionPool;
 import ru.vlabum.android.games.sprite.Background;
 import ru.vlabum.android.games.sprite.Bullet;
-import ru.vlabum.android.games.sprite.ButtonPlay;
 import ru.vlabum.android.games.sprite.ButtonRestart;
 import ru.vlabum.android.games.sprite.EnemyShip;
 import ru.vlabum.android.games.sprite.GameOverMessage;
@@ -33,6 +33,12 @@ import ru.vlabum.android.games.utils.EnemiesEmitter;
 public class GameScreen extends Base2DScreen {
 
     private static final int STAR_COUNT = 32;
+    private static final float FONT_SIZE = 0.02f;
+
+    private static final String FRAGS = "Frags: ";
+    private static final String HP = "HP: ";
+    private static final String LEVEL = "Level: ";
+    private static final String SCORE = "Score: ";
 
     private Texture txBackground;
     private TextureRegion txGameOverMessage;
@@ -49,6 +55,15 @@ public class GameScreen extends Base2DScreen {
     private Sound explosionSound;
     private boolean isGameOver = false;
     private ButtonRestart buttonRestart;
+    private Font font;
+
+    private int frags;
+
+    private StringBuilder sbFrags = new StringBuilder();
+    private StringBuilder sbHP = new StringBuilder();
+    private StringBuilder sbLevel = new StringBuilder();
+    private StringBuilder sbScore = new StringBuilder();
+
 
     public GameScreen(@NotNull Game game) {
         super(game);
@@ -72,16 +87,18 @@ public class GameScreen extends Base2DScreen {
         mainShip = new MainShip(txAtlas, bulletPool, explosionPool);
         enemyShipPool = new EnemyShipPool(txAtlas, explosionPool, bulletPool, mainShip, worldBounds);
         enemiesEmitter = new EnemiesEmitter(worldBounds, enemyShipPool, txAtlas);
-        buttonRestart = new ButtonRestart(txAtlas, this::restart);
+        buttonRestart = new ButtonRestart(txAtlas, this);
+        font = new Font("font/font.fnt", "font/font.png");
+        font.setFontSize(FONT_SIZE);
         music.setLooping(true);
-        music.setVolume(0.5f);
+        music.setVolume(1f);
         music.play();
     }
 
     @Override
     public void render(final float delta) {
         update(delta);
-        checkCollisions();
+        if (!isGameOver) checkCollisions();
         deleteAllDestroyed();
         draw();
     }
@@ -94,11 +111,10 @@ public class GameScreen extends Base2DScreen {
         bulletPool.updateActiveSprites(delta);
         enemyShipPool.updateActiveSprites(delta);
         explosionPool.updateActiveSprites(delta);
-        if (!isGameOver) enemiesEmitter.generate(delta);
+        if (!isGameOver) enemiesEmitter.generate(delta, frags);
     }
 
     private void checkCollisions() {
-        if (isGameOver) return;
         final List<EnemyShip> enemyList = enemyShipPool.getActiveObjects();
         for (final EnemyShip enemy : enemyList) {
             if (enemy.isDestroyed()) continue;
@@ -120,6 +136,7 @@ public class GameScreen extends Base2DScreen {
                 if (enemy.isBulletCollision(bullet)) {
                     enemy.damage(bullet.getDamage());
                     bullet.setDestroyed(true);
+                    if (enemy.isDestroyed()) frags++;
                 }
             }
         }
@@ -156,7 +173,19 @@ public class GameScreen extends Base2DScreen {
             gameOverMessage.draw(batch);
             buttonRestart.draw(batch);
         }
+        printInfo();
         batch.end();
+    }
+
+    public void printInfo() {
+        sbFrags.setLength(0);
+        sbHP.setLength(0);
+        sbLevel.setLength(0);
+        sbScore.setLength(0);
+        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft(), worldBounds.getTop());
+        font.draw(batch, sbScore.append(SCORE).append(mainShip.getScore()), worldBounds.getLeft(), worldBounds.getTop() - FONT_SIZE * 1.1f);
+        font.draw(batch, sbHP.append(HP).append(mainShip.getHp()), worldBounds.position.x, worldBounds.getTop(), Align.center);
+        font.draw(batch, sbLevel.append(LEVEL).append(enemiesEmitter.getStage()), worldBounds.getRight(), worldBounds.getTop(), Align.right);
     }
 
     @Override
@@ -176,12 +205,14 @@ public class GameScreen extends Base2DScreen {
         isGameOver = true;
     }
 
-    private void restart() {
+    public void restart() {
+        frags = 0;
+        mainShip.newGame();
+        enemiesEmitter.newGame();
+        bulletPool.freeAllActiveObjects();
+        enemyShipPool.freeAllActiveObjects();
+        explosionPool.freeAllActiveObjects();
         isGameOver = false;
-        mainShip.restore();
-        mainShip.setLeft(-mainShip.getHalfWidth());
-        mainShip.resize(worldBounds);
-        mainShip.setScore(0);
     }
 
     @Override
@@ -194,32 +225,33 @@ public class GameScreen extends Base2DScreen {
         music.dispose();
         explosionPool.dispose();
         explosionSound.dispose();
+        font.dispose();
         super.dispose();
     }
 
     @Override
     public boolean touchDown(@NotNull final Vector2 touch, final int pointer) {
-        mainShip.touchDown(touch, pointer);
-        buttonRestart.touchDown(touch, pointer);
+        if (!isGameOver) mainShip.touchDown(touch, pointer);
+        else buttonRestart.touchDown(touch, pointer);
         return super.touchDown(touch, pointer);
     }
 
     @Override
     public boolean touchUp(@NotNull final Vector2 touch, final int pointer) {
-        mainShip.touchUp(touch, pointer);
-        buttonRestart.touchUp(touch, pointer);
+        if (!isGameOver) mainShip.touchUp(touch, pointer);
+        else buttonRestart.touchUp(touch, pointer);
         return super.touchUp(touch, pointer);
     }
 
     @Override
     public boolean keyDown(final int keycode) {
-        mainShip.keyDown(keycode);
+        if (!isGameOver) mainShip.keyDown(keycode);
         return super.keyDown(keycode);
     }
 
     @Override
     public boolean keyUp(final int keycode) {
-        mainShip.keyUp(keycode);
+        if (!isGameOver) mainShip.keyUp(keycode);
         return super.keyUp(keycode);
     }
 
